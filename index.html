@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Write here</title>
+</head>
+
+<body>
+    <main>
+        <p class="title">Text To Speech</p>
+        <div class="text-section">
+            <p class="text-title">Enter Text</p>
+            <textarea nam="" id="text"></textarea>
+        </div>
+        <div class="voice-section">
+            <p class="voice-title">Select Voice</p>
+            <select name="" id="voice">
+                <option value="Google US English">Google US English</option>
+            </select>
+        </div>
+        <button class="submit">Convert to Speech</button>
+    </main>
+    <style>
+        main {
+            background-color: rgb(255, 255, 255);
+            height: 500px;
+            width: 700px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px 5px rgb(0, 162, 184);
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            flex-direction: column;
+            position: relative;
+            transform: translate(50%, 10%);
+            
+        }
+
+        .title {
+            font-size: 2rem;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            color: rgb(48, 48, 48);
+        }
+
+        .text-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .text-title {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            color: rgb(36, 36, 36);
+            align-self: flex-start;
+        }
+
+        #text {
+            height: 7rem;
+            width: 20rem;
+            border: none;
+            outline: 2px solid #3f6b889f;
+            border-radius: 0.4rem;
+            padding: 0px 10px;
+        }
+
+        .submit {
+            background-color: rgba(92, 55, 225, 0.979);
+            color: white;
+            width: 20rem;
+            height: 3rem;
+            border-radius: 0.3rem;
+            font-size: 1.2rem;
+            border: none;
+        }
+    </style>
+    <script>
+        const textarea = document.querySelector('#text')
+        let voicelist = document.querySelector('#voice')
+        let speechbtn = document.querySelector('.submit')
+
+        let synth = speechSynthesis
+        let isSpeaking = true
+
+        function voicespeech() {
+            for (let voice of synth.getVoices()) {
+                let option = document.createElement('option')
+                option.text = voice.name
+                voicelist.add(option)
+                console.log(option)
+            }
+        }
+        synth.addEventListener('voiceschanged', voicespeech)
+        function texttospeech(text) {
+            let utternance = new SpeechSynthesisUtterance(text)
+            for (let voice of synth.getVoices()) {
+                if (voice.name === voicelist.value) {
+                    utternance.voice = voice
+                }
+            }
+            speechSynthesis.speak(utternance)
+        }
+        speechbtn.addEventListener('click', (e) => {
+            e.preventDefault()
+            if (textarea.value != '') {
+                if (!synth.speaking) {
+                    texttospeech(textarea.value)
+                }
+                if (textarea.value.length > 80) {
+                    if (isSpeaking) {
+                        synth.resume()
+                        isSpeaking = false
+                        speechbtn.innerHTML = 'Pause Speech'
+                    } else {
+                        synth.pause()
+                        isSpeaking = true
+                        speechbtn.innerHTML = 'Resume Speech'
+                    }
+                    setInterval(() => {
+                        if (!synth.speaking && !isSpeaking) {
+                            isSpeaking = true
+                            speechbtn.innerHTML = 'Convert to Speech'
+                        }
+                    })
+                } else {
+                    speechbtn.innerHTML = 'Convert to Speech'
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
